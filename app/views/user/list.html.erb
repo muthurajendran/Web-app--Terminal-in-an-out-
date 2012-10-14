@@ -1,0 +1,44 @@
+<div align="center">
+ 	
+<%= form_for(:user,:url => {:action => 'sort'}, :html => {:multipart => true }) do |f| %>
+<th><%= f.label "Sort" %></th>
+
+<td><%= f.select(:sort_val,["Cpu","Memory"]) %></td>
+<p align="center">
+<%= submit_tag("GO") %></p>
+
+<% if !flash[:notice].blank? %>
+<div>
+	<p align = "center"><%= flash[:notice] %></p>
+</div>
+<% end %>
+
+<% end %>
+<h4 align="center"> List of Processes </h4>
+  <table border='border' align="center">
+    <tr>
+     
+      <th>Process id</th>
+      <th>Memory </th>
+      <th>Cpu usage</th>
+      <th>Actions</th>
+      
+    </tr>
+    <% status = POpen4::popen4( 'ps -eo pid,pmem,pcpu | sort -k 1 -nr') do |stdout, stderr, stdin| %>
+    <%  stdout.each do |line| %> 
+    <tr>
+	<% x=line.split %>
+	<% x.each do |val| %>
+    <td><%= val %></td>
+	<% end %>
+   
+    <td>
+        <%= link_to("Show", {:action => 'description', :id => x[0].to_i}) %>
+        
+      </td>
+    </tr>
+ <% end %>
+    <% end %>
+  </table>
+</div>
+
